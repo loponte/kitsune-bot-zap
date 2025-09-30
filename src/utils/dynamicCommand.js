@@ -1,9 +1,3 @@
-/**
- * Direcionador
- * de comandos.
- *
- * @author Dev Lop
- */
 const {
   DangerError,
   WarningError,
@@ -25,6 +19,8 @@ const {
   isActiveAntiLinkGroup,
   isActiveOnlyAdmins,
   getPrefix,
+  addHelpSentUser,
+  hasReceivedHelp,
 } = require("./database");
 const { errorLog } = require("../utils/logger");
 const path = require("node:path");
@@ -69,6 +65,11 @@ exports.dynamicCommand = async (paramsHandler, startProcess) => {
         return;
       }
 
+      // Verifica se o usuário já recebeu help automático anteriormente
+      if (hasReceivedHelp(remoteJid)) {
+        return;
+      }
+
       const now = Date.now();
       const lastAt = lastHelpSentAtByJid.get(remoteJid) || 0;
       if (now - lastAt < HELP_COOLDOWN_MS) {
@@ -82,6 +83,9 @@ exports.dynamicCommand = async (paramsHandler, startProcess) => {
         imagePath,
         `\n\nOlá, para fazer o comando de menu é /menu, mas vou te ajudar e ja te enviar!\n\n${menuMessage(remoteJid)}`
       );
+
+      // Registra que o usuário já recebeu help automático
+      addHelpSentUser(remoteJid);
 
       if (messageId) {
         respondedMessageIds.add(messageId);

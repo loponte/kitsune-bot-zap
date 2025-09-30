@@ -1,7 +1,3 @@
-/**
- *
- * @author Dev Lop
- */
 const { PREFIX } = require(`${BASE_DIR}/config`);
 
 module.exports = {

@@ -1,9 +1,3 @@
-/**
- * 
- * 
- *
- * @author Dev Lop
- */
 const { PREFIX } = require(`${BASE_DIR}/config`);
 const { InvalidParameterError } = require(`${BASE_DIR}/errors`);
 const { toUserOrGroupJid } = require(`${BASE_DIR}/utils`);

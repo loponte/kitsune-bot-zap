@@ -1,8 +1,3 @@
-/**
- * Menu do bot
- *
- * @author Dev Lop
- */
 const { BOT_NAME } = require("./config");
 const packageInfo = require("../package.json");
 const { readMore } = require("./utils");
@@ -33,7 +28,7 @@ exports.menuMessage = (groupJid) => {
 ▢
 ▢ • ${prefix}cep - (busca informações de um CEP)
 ▢ • ${prefix}fake-chat - (faz uma conversa fake)
-▢ • ${prefix}gerar-link - (gera um link de conversa)
+▢ • ${prefix}gerar-link - (gera um link de uma imagem)
 ▢
 ╰━━─「🚀」─━━
 

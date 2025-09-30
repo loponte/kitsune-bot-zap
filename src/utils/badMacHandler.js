@@ -1,12 +1,3 @@
-/**
- * Utilitário para lidar com erros "Bad MAC"
- * que são comuns em bots WhatsApp usando Baileys.
- *
- * Este módulo fornece funções para detectar, contar
- * e lidar graciosamente com esses erros.
- *
- * @author Dev Lop
- */
 const { errorLog, warningLog, infoLog } = require("./logger");
 const path = require("node:path");
 const fs = require("node:fs");

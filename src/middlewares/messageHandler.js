@@ -1,8 +1,3 @@
-/**
- * Validador de mensagens
- *
- * @author MRX
- */
 const { getContent, compareUserJidWithOtherNumber } = require("../utils");
 const { errorLog, infoLog } = require("../utils/logger");
 const {

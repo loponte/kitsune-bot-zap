@@ -1,9 +1,3 @@
-/**
- * Desenvolvido por: Dev Lop
- * Implementação dos metadados feita por: MRX
- *
- * @author Dev Lop
- */
 const fs = require("node:fs");
 const path = require("node:path");
 const { exec } = require("node:child_process");

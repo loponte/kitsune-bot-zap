@@ -1,9 +1,3 @@
-/**
- * Evento chamado quando uma mensagem
- * é enviada para o grupo do WhatsApp
- *
- * @author Dev Lop
- */
 const {
   isAtLeastMinutesInPast,
   GROUP_PARTICIPANT_ADD,

@@ -1,8 +1,3 @@
-/**
- * Interceptadores diversos.
- *
- * @author Dev Lop
- */
 const { OWNER_NUMBER, OWNER_LID } = require("../config");
 const { compareUserJidWithOtherNumber } = require("../utils");
 const { getPrefix } = require("../utils/database");

@@ -1,9 +1,3 @@
-/**
- * Funções úteis para trabalhar
- * com dados.
- *
- * @author Dev Lop
- */
 const path = require("node:path");
 const fs = require("node:fs");
 const { PREFIX } = require("../config");
@@ -21,6 +15,7 @@ const ONLY_ADMINS_FILE = "only-admins";
 const PREFIX_GROUPS_FILE = "prefix-groups";
 const RESTRICTED_MESSAGES_FILE = "restricted-messages";
 const WELCOME_GROUPS_FILE = "welcome-groups";
+const HELP_SENT_USERS_FILE = "help-sent-users";
 
 function createIfNotExists(fullPath, formatIfNotExists = []) {
   if (!fs.existsSync(fullPath)) {
@@ -416,6 +411,23 @@ exports.addAutoResponderItem = (match, answer) => {
   writeJSON(filename, responses, []);
 
   return true;
+};
+
+exports.addHelpSentUser = (userJid) => {
+  const filename = HELP_SENT_USERS_FILE;
+  const helpSentUsers = readJSON(filename, []);
+
+  if (!helpSentUsers.includes(userJid)) {
+    helpSentUsers.push(userJid);
+    writeJSON(filename, helpSentUsers, []);
+  }
+};
+
+exports.hasReceivedHelp = (userJid) => {
+  const filename = HELP_SENT_USERS_FILE;
+  const helpSentUsers = readJSON(filename, []);
+
+  return helpSentUsers.includes(userJid);
 };
 
 exports.removeAutoResponderItemByKey = (key) => {

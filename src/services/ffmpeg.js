@@ -1,8 +1,3 @@
-/**
- * Serviços de processamento de imagens usando ffmpeg.
- *
- * @author MRX
- */
 const fs = require("node:fs");
 const path = require("node:path");
 const { exec } = require("child_process");

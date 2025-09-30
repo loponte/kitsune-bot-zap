@@ -1,8 +1,3 @@
-/**
- * Serviços de upload de imagem e geração de link.
- *
- * @author Dev Lop
- */
 const FormData = require("form-data");
 const axios = require("axios");
 

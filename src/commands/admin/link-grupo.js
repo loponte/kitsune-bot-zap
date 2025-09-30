@@ -1,8 +1,3 @@
-/**
- * Comando para obter o link do grupo
- *
- * @author Dev Lop
- */
 const { errorLog } = require(`${BASE_DIR}/utils/logger`);
 const { PREFIX } = require(`${BASE_DIR}/config`);
 const { DangerError } = require(`${BASE_DIR}/errors`);

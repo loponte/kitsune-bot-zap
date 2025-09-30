@@ -1,7 +1,3 @@
-/**
- *
- * @author Dev Lop
- */
 const {
   checkIfMemberIsMuted,
   unmuteMember,

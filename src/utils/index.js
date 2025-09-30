@@ -1,8 +1,3 @@
-/**
- * Funções diversas.
- *
- * @author Dev Lop
- */
 const { downloadContentFromMessage, delay } = require("baileys");
 const { PREFIX, COMMANDS_DIR, TEMP_DIR, ASSETS_DIR } = require("../config");
 const path = require("node:path");

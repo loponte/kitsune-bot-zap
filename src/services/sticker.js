@@ -1,8 +1,3 @@
-/**
- * Serviços para processar figurinhas (stickers) no ffmpeg.
- *
- * @author MRX
- */
 const { TEMP_DIR } = require("../config");
 const path = require("node:path");
 const fs = require("node:fs");

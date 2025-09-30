@@ -1,11 +1,3 @@
-/**
- * Funções comuns de uso geral
- * do bot. Não há
- * necessidade de modificar
- * este arquivo.
- *
- * @author Dev Lop
- */
 const { BOT_EMOJI, TIMEOUT_IN_MILLISECONDS_BY_EVENT } = require("../config");
 const {
   extractDataFromMessage,

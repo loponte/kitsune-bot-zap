@@ -1,8 +1,3 @@
-/**
- * Logs
- *
- * @author Dev Lop
- */
 const { version } = require("../../package.json");
 
 exports.sayLog = (message) => {

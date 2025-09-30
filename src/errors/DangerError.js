@@ -1,9 +1,3 @@
-/**
- * Classe de erro customizada para
- * erros críticos.
- *
- * @author Dev Lop
- */
 class DangerError extends Error {
   constructor(message) {
     super(message);

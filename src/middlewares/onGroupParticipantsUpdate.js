@@ -1,9 +1,3 @@
-/**
- * Evento chamado quando um usuário
- * entra ou sai de um grupo de WhatsApp.
- *
- * @author Dev Lop
- */
 const fs = require("node:fs");
 const { getProfileImageData } = require("../services/baileys");
 const { onlyNumbers, getRandomNumber } = require("../utils");

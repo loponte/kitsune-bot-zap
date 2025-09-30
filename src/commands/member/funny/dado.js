@@ -1,9 +1,3 @@
-/**
- * 
- * 
- *
- * @author Dev Lop
- */
 const { delay } = require("baileys");
 
 const { getRandomNumber } = require(`${BASE_DIR}/utils`);

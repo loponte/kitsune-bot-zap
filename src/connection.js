@@ -1,19 +1,3 @@
-/**
- * Script de
- * inicialização do bot.
- *
- * Este script é
- * responsável por
- * iniciar a conexão
- * com o WhatsApp.
- *
- * Não é recomendado alterar
- * este arquivo,
- * a menos que você saiba
- * o que está fazendo.
- *
- * @author Dev Lop
- */
 const path = require("node:path");
 const { question, onlyNumbers } = require("./utils");
 const {

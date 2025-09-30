@@ -1,10 +1,3 @@
-/**
- * Desenvolvido por: Mkg
- * Refatorado por: Dev Lop
- * Proteções de segurança implementadas
- *
- * @author Dev Lop
- */
 const { exec } = require("child_process");
 const { isBotOwner } = require(`${BASE_DIR}/middlewares`);
 const { PREFIX } = require(`${BASE_DIR}/config`);

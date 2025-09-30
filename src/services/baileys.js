@@ -1,9 +1,3 @@
-/**
- * Funções reaproveitáveis
- * da biblioteca Baileys (comunicação com o WhatsApp).
- *
- * @author Dev Lop
- */
 const { getBuffer, getRandomName } = require("../utils");
 const fs = require("node:fs");
 const path = require("node:path");

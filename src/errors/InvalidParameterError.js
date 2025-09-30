@@ -1,9 +1,3 @@
-/**
- * Classe de erro customizada para
- * parâmetros inválidos.
- *
- * @author Dev Lop
- */
 class InvalidParameterError extends Error {
   constructor(message) {
     super(message);

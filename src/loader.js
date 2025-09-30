@@ -1,11 +1,3 @@
-/**
- * Este script é responsável
- * por carregar os eventos
- * que serão escutados pelo
- * socket do WhatsApp.
- *
- * @author Dev Lop
- */
 const { TIMEOUT_IN_MILLISECONDS_BY_EVENT } = require("./config");
 const { onMessagesUpsert } = require("./middlewares/onMesssagesUpsert");
 const path = require("node:path");
