@@ -29,6 +29,26 @@ exports.menuMessage = (groupJid) => {
 ▢
 ╰━━─「⭐」─━━
 
+╭━━⪩ PRINCIPAL ⪨━━
+▢
+▢ • ${prefix}cep - (busca informações de um CEP)
+▢ • ${prefix}fake-chat - (faz uma conversa fake)
+▢ • ${prefix}gerar-link - (gera um link de conversa)
+▢
+╰━━─「🚀」─━━
+
+╭━━⪩ BRINCADEIRAS ⪨━━
+▢
+▢ • ${prefix}abracar - (abraça um usuário)
+▢ • ${prefix}beijar - (beija um usuário)
+▢ • ${prefix}dado - (joga um dado)
+▢ • ${prefix}jantar - (convida um usuário para jantar)
+▢ • ${prefix}lutar - (lutar com um usuário)
+▢ • ${prefix}socar - (soca um usuário)
+▢ • ${prefix}perfil - (mostra o perfil de um usuário)
+▢
+╰━━─「🎡」─━━
+
 ╭━━⪩ ADMINS ⪨━━
 ▢
 ▢ • ${prefix}fechar - (somente adms mandam mensagem)
@@ -59,25 +79,5 @@ exports.menuMessage = (groupJid) => {
 ▢ • ${prefix}link-grupo - (mostra o link do grupo)
 ▢ • ${prefix}list-auto-responder - (lista os auto-responders)
 ▢
-╰━━─「🌙」─━━
-
-╭━━⪩ PRINCIPAL ⪨━━
-▢
-▢ • ${prefix}cep - (busca informações de um CEP)
-▢ • ${prefix}fake-chat - (faz uma conversa fake)
-▢ • ${prefix}gerar-link - (gera um link de conversa)
-▢
-╰━━─「🚀」─━━
-
-╭━━⪩ BRINCADEIRAS ⪨━━
-▢
-▢ • ${prefix}abracar - (abraça um usuário)
-▢ • ${prefix}beijar - (beija um usuário)
-▢ • ${prefix}dado - (joga um dado)
-▢ • ${prefix}jantar - (convida um usuário para jantar)
-▢ • ${prefix}lutar - (lutar com um usuário)
-▢ • ${prefix}socar - (soca um usuário)
-▢ • ${prefix}perfil - (mostra o perfil de um usuário)
-▢
-╰━━─「🎡」─━━`;
+╰━━─「🌙」─━━`;
 };

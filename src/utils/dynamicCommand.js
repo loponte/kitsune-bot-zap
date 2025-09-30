@@ -27,8 +27,16 @@ const {
   getPrefix,
 } = require("./database");
 const { errorLog } = require("../utils/logger");
-const { ONLY_GROUP_ID, BOT_EMOJI } = require("../config");
+const path = require("node:path");
+const { ONLY_GROUP_ID, BOT_EMOJI, ASSETS_DIR } = require("../config");
 const { badMacHandler } = require("./badMacHandler");
+const { menuMessage } = require("../menu");
+
+// Evita respostas duplicadas para o mesmo ID de mensagem (eventos repetidos do upsert)
+const respondedMessageIds = new Set();
+// Cooldown por contato para evitar flood de help no privado
+const lastHelpSentAtByJid = new Map();
+const HELP_COOLDOWN_MS = 20000; // 20s
 
 /**
  * @param {CommandHandleProps} paramsHandler
@@ -44,11 +52,46 @@ exports.dynamicCommand = async (paramsHandler, startProcess) => {
     sendErrorReply,
     sendReact,
     sendReply,
+    sendImageFromFile,
     sendWarningReply,
     socket,
     userJid,
     webMessage,
   } = paramsHandler;
+
+  const isGroupChat = !!remoteJid?.endsWith("@g.us");
+
+  // Help automático no privado quando a mensagem não for um comando (sem prefixo válido)
+  if (!isGroupChat) {
+    if (fullMessage && !verifyPrefix(prefix, remoteJid)) {
+      const messageId = webMessage?.key?.id;
+      if (messageId && respondedMessageIds.has(messageId)) {
+        return;
+      }
+
+      const now = Date.now();
+      const lastAt = lastHelpSentAtByJid.get(remoteJid) || 0;
+      if (now - lastAt < HELP_COOLDOWN_MS) {
+        return;
+      }
+
+      const groupPrefix = getPrefix(remoteJid);
+      const imagePath = path.join(ASSETS_DIR, "images", "takeshi-bot.png");
+
+      await sendImageFromFile(
+        imagePath,
+        `\n\nOlá, para fazer o comando de menu é /menu, mas vou te ajudar e ja te enviar!\n\n${menuMessage(remoteJid)}`
+      );
+
+      if (messageId) {
+        respondedMessageIds.add(messageId);
+      }
+
+      lastHelpSentAtByJid.set(remoteJid, now);
+
+      return;
+    }
+  }
 
   const activeGroup = isActiveGroup(remoteJid);
 
