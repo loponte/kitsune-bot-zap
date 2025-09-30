@@ -374,13 +374,15 @@ exports.randomDelay = async () => {
   return await delay(values[getRandomNumber(0, values.length - 1)]);
 };
 
-exports.isAtLeastMinutesInPast = (timestamp, minimumMinutes = 5) => {
+exports.isAtLeastMinutesInPast = (timestamp, minimumMinutes = 15) => {
   const currentTimestamp = Math.floor(Date.now() / 1000);
 
   const diffInSeconds = currentTimestamp - timestamp;
 
   const diffInMinutes = Math.floor(diffInSeconds / 60);
 
+  // Aumentado de 5 para 15 minutos para permitir mensagens de usuários que estavam offline
+  // Isso resolve o bug onde o bot não respondia a mensagens de pessoas sem internet
   return diffInMinutes >= minimumMinutes;
 };
 

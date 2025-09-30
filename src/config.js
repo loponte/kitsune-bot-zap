@@ -36,7 +36,8 @@ exports.ASSETS_DIR = path.resolve(__dirname, "..", "assets");
 exports.TEMP_DIR = path.resolve(__dirname, "..", "assets", "temp");
 
 // Timeout em milissegundos por evento (evita banimento).
-exports.TIMEOUT_IN_MILLISECONDS_BY_EVENT = 300;
+// Aumentado de 300ms para 1000ms para melhor compatibilidade com usuários que estavam offline
+exports.TIMEOUT_IN_MILLISECONDS_BY_EVENT = 1000;
 
 // Plataforma de API's
 exports.SPIDER_API_BASE_URL = "https://api.spiderx.com.br/api";

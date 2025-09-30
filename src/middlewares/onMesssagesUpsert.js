@@ -36,7 +36,12 @@ exports.onMessagesUpsert = async ({ socket, messages, startProcess }) => {
         await messageHandler(socket, webMessage);
       }
 
+      // Verificação melhorada para mensagens antigas
+      // Agora permite mensagens de até 15 minutos atrás para usuários que estavam offline
       if (isAtLeastMinutesInPast(timestamp)) {
+        if (DEVELOPER_MODE) {
+          infoLog(`Mensagem ignorada por ser muito antiga: ${timestamp}`);
+        }
         continue;
       }
 
