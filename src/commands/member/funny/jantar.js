@@ -1,6 +1,6 @@
-const { PREFIX } = require(`${BASE_DIR}/config`);
+const { PREFIX, OWNER_NUMBER } = require(`${BASE_DIR}/config`);
 const { InvalidParameterError } = require(`${BASE_DIR}/errors`);
-const { toUserOrGroupJid, onlyNumbers } = require(`${BASE_DIR}/utils`);
+const { toUserOrGroupJid, onlyNumbers, compareUserJidWithOtherNumber } = require(`${BASE_DIR}/utils`);
 const path = require("node:path");
 const fs = require("node:fs");
 const { ASSETS_DIR } = require(`${BASE_DIR}/config`);
@@ -39,8 +39,12 @@ module.exports = {
       return;
     }
 
-    const userNumber = onlyNumbers(userJid || "");
-    const targetNumber = onlyNumbers(targetJid || "");
+    // Detecta se o dono é mencionado e usa o número correto
+    const isOwnerExecuting = compareUserJidWithOtherNumber({ userJid, otherNumber: OWNER_NUMBER });
+    const isOwnerTarget = compareUserJidWithOtherNumber({ userJid: targetJid, otherNumber: OWNER_NUMBER });
+    
+    const userNumber = isOwnerExecuting ? OWNER_NUMBER : onlyNumbers(userJid || "");
+    const targetNumber = isOwnerTarget ? OWNER_NUMBER : onlyNumbers(targetJid || "");
     const caption = `@${userNumber} foi a um jantar com @${targetNumber}!`;
 
     const dir = path.resolve(ASSETS_DIR, "images", "funny", "jantar");

@@ -24,9 +24,10 @@ const {
 } = require("./database");
 const { errorLog } = require("../utils/logger");
 const path = require("node:path");
-const { ONLY_GROUP_ID, BOT_EMOJI, ASSETS_DIR } = require("../config");
+const { ONLY_GROUP_ID, BOT_EMOJI, ASSETS_DIR, OWNER_NUMBER } = require("../config");
 const { badMacHandler } = require("./badMacHandler");
 const { menuMessage } = require("../menu");
+const { compareUserJidWithOtherNumber } = require(".");
 
 // Evita respostas duplicadas para o mesmo ID de mensagem (eventos repetidos do upsert)
 const respondedMessageIds = new Set();
@@ -56,6 +57,17 @@ exports.dynamicCommand = async (paramsHandler, startProcess) => {
   } = paramsHandler;
 
   const isGroupChat = !!remoteJid?.endsWith("@g.us");
+
+  // Verifica se é o dono falando "kitsune" (case insensitive)
+  const isOwner = compareUserJidWithOtherNumber({ userJid, otherNumber: OWNER_NUMBER });
+  if (isOwner && fullMessage && fullMessage.toLowerCase().includes("kitsune")) {
+    const messageId = webMessage?.key?.id;
+    if (messageId && !respondedMessageIds.has(messageId)) {
+      await sendReply("sim, concordo! 🦊");
+      respondedMessageIds.add(messageId);
+      return;
+    }
+  }
 
   // Help automático no privado quando a mensagem não for um comando (sem prefixo válido)
   if (!isGroupChat) {
@@ -235,31 +247,26 @@ exports.dynamicCommand = async (paramsHandler, startProcess) => {
     }
 
     if (error instanceof InvalidParameterError) {
-      await sendWarningReply(`Parâmetros inválidos! ${error.message}`);
-    } else if (error instanceof WarningError) {
       await sendWarningReply(error.message);
-    } else if (error instanceof DangerError) {
-      await sendErrorReply(error.message);
-    } else if (error.isAxiosError) {
-      const messageText = error.response?.data?.message || error.message;
-      const url = error.config?.url || "URL não disponível";
-
-      const isSpiderAPIError = url.includes("api.spiderx.com.br");
-
-      await sendErrorReply(
-        `Ocorreu um erro ao executar uma chamada remota para ${
-          isSpiderAPIError ? "a Spider X API" : url
-        } no comando ${command.name}!
-      
-📄 *Detalhes*: ${messageText}`
-      );
-    } else {
-      errorLog("Erro ao executar comando", error);
-      await sendErrorReply(
-        `Ocorreu um erro ao executar o comando ${command.name}!
-      
-📄 *Detalhes*: ${error.message}`
-      );
+      return;
     }
+
+    if (error instanceof WarningError) {
+      await sendWarningReply(error.message);
+      return;
+    }
+
+    if (error instanceof DangerError) {
+      await sendErrorReply(error.message);
+      return;
+    }
+
+    errorLog(
+      `Erro ao executar comando ${command?.name}: ${error.message} | Stack: ${error.stack}`
+    );
+
+    await sendErrorReply(
+      "Ocorreu um erro interno. Tente novamente mais tarde!"
+    );
   }
 };

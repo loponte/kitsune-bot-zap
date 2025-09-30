@@ -1,14 +1,14 @@
-const { PREFIX } = require(`${BASE_DIR}/config`);
+const { PREFIX, OWNER_NUMBER } = require(`${BASE_DIR}/config`);
 const { InvalidParameterError } = require(`${BASE_DIR}/errors`);
-const { toUserOrGroupJid, onlyNumbers } = require(`${BASE_DIR}/utils`);
+const { toUserOrGroupJid, onlyNumbers, compareUserJidWithOtherNumber } = require(`${BASE_DIR}/utils`);
 const path = require("node:path");
 const fs = require("node:fs");
 const { ASSETS_DIR } = require(`${BASE_DIR}/config`);
 
 module.exports = {
   name: "socar",
-  description: "Bate em um usuário com um soco.",
-  commands: ["socar", "soca", "soco", "socao"],
+  description: "Soca um usuário que você odeia.",
+  commands: ["socar", "soca", "soco", "punch"],
   usage: `${PREFIX}socar @usuario`,
   /**
    * @param {CommandHandleProps} props
@@ -39,9 +39,13 @@ module.exports = {
       return;
     }
 
-    const userNumber = onlyNumbers(userJid || "");
-    const targetNumber = onlyNumbers(targetJid || "");
-    const caption = `@${userNumber} deu um soco bombástico em @${targetNumber}!`;
+    // Detecta se o dono é mencionado e usa o número correto
+    const isOwnerExecuting = compareUserJidWithOtherNumber({ userJid, otherNumber: OWNER_NUMBER });
+    const isOwnerTarget = compareUserJidWithOtherNumber({ userJid: targetJid, otherNumber: OWNER_NUMBER });
+    
+    const userNumber = isOwnerExecuting ? OWNER_NUMBER : onlyNumbers(userJid || "");
+    const targetNumber = isOwnerTarget ? OWNER_NUMBER : onlyNumbers(targetJid || "");
+    const caption = `@${userNumber} socou @${targetNumber}!`;
 
     const dir = path.resolve(ASSETS_DIR, "images", "funny", "socar");
     const files = fs.existsSync(dir)
@@ -50,7 +54,7 @@ module.exports = {
 
     const chosen = files.length
       ? files[Math.floor(Math.random() * files.length)]
-      : "some-guy-getting-punch-anime-punching-some-guy-anime.mp4";
+      : "punch.mp4";
 
     const filePath = path.resolve(
       ASSETS_DIR,

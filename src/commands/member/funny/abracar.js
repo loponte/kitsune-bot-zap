@@ -1,14 +1,14 @@
-const { PREFIX } = require(`${BASE_DIR}/config`);
+const { PREFIX, OWNER_NUMBER } = require(`${BASE_DIR}/config`);
 const { InvalidParameterError } = require(`${BASE_DIR}/errors`);
-const { toUserOrGroupJid, onlyNumbers } = require(`${BASE_DIR}/utils`);
+const { toUserOrGroupJid, onlyNumbers, compareUserJidWithOtherNumber } = require(`${BASE_DIR}/utils`);
 const path = require("node:path");
 const fs = require("node:fs");
 const { ASSETS_DIR } = require(`${BASE_DIR}/config`);
 
 module.exports = {
   name: "abracar",
-  description: "Abraça um usuário desejado.",
-  commands: ["abracar", "abraca", "abraco", "abracos"],
+  description: "Abraça um usuário que você ama.",
+  commands: ["abracar", "abraça", "abraço", "hug"],
   usage: `${PREFIX}abracar @usuario`,
   /**
    * @param {CommandHandleProps} props
@@ -22,7 +22,6 @@ module.exports = {
     replyJid,
     args,
     isReply,
-    sendReply,
   }) => {
     if (!args.length && !isReply) {
       throw new InvalidParameterError(
@@ -40,10 +39,14 @@ module.exports = {
       return;
     }
 
-    const userNumber = onlyNumbers(userJid || "");
-    const targetNumber = onlyNumbers(targetJid || "");
-    const caption = `@${userNumber} deu um abraço em @${targetNumber}!`;
+    // Detecta se o dono é mencionado e usa o número correto
+    const isOwnerExecuting = compareUserJidWithOtherNumber({ userJid, otherNumber: OWNER_NUMBER });
+    const isOwnerTarget = compareUserJidWithOtherNumber({ userJid: targetJid, otherNumber: OWNER_NUMBER });
     
+    const userNumber = isOwnerExecuting ? OWNER_NUMBER : onlyNumbers(userJid || "");
+    const targetNumber = isOwnerTarget ? OWNER_NUMBER : onlyNumbers(targetJid || "");
+    const caption = `@${userNumber} abraçou @${targetNumber}!`;
+
     const dir = path.resolve(ASSETS_DIR, "images", "funny", "abracar");
     const files = fs.existsSync(dir)
       ? fs.readdirSync(dir).filter((f) => /\.(mp4|gif|webm|mov)$/i.test(f))
@@ -51,7 +54,7 @@ module.exports = {
 
     const chosen = files.length
       ? files[Math.floor(Math.random() * files.length)]
-      : "hug-darker-than-black.mp4";
+      : "hug.mp4";
 
     const filePath = path.resolve(
       ASSETS_DIR,
