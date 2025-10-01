@@ -48,9 +48,6 @@ exports.menuMessage = (groupJid) => {
 ▢
 ▢ • ${prefix}fechar - (somente adms mandam mensagem)
 ▢ • ${prefix}abrir - (abre o grupo)
-▢ • ${prefix}add-auto-responder
-▢ • ${prefix}delete-auto-responder
-▢ • ${prefix}agendar-mensagem - (agenda uma mensagem)
 ▢ • ${prefix}welcome (1/0) - (mensagem de boas-vindas)
 ▢ • ${prefix}exit (1/0) - (mensagem de saida)
 ▢ • ${prefix}anti-audio (1/0) - (anti-audio)
@@ -61,8 +58,6 @@ exports.menuMessage = (groupJid) => {
 ▢ • ${prefix}anti-product (1/0) - (anti-product)
 ▢ • ${prefix}anti-sticker (1/0) - (anti-sticker)
 ▢ • ${prefix}anti-video (1/0) - (anti-video)
-▢ • ${prefix}auto-responder (1/0) - (auto-responder)
-▢ • ${prefix}only-admin (1/0)
 ▢ • ${prefix}promover - (promove um usuário)
 ▢ • ${prefix}rebaixar - (rebaixa um usuário)
 ▢ • ${prefix}mute - (muta um usuário)
@@ -72,7 +67,6 @@ exports.menuMessage = (groupJid) => {
 ▢ • ${prefix}hidetag - (marcar todos os usuarios)
 ▢ • ${prefix}limpar - (limpa o chat)
 ▢ • ${prefix}link-grupo - (mostra o link do grupo)
-▢ • ${prefix}list-auto-responder - (lista os auto-responders)
 ▢
 ╰━━─「🌙」─━━`;
 };
