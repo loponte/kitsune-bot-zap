@@ -51,7 +51,7 @@ ${PREFIX}ban (mencionando uma mensagem)`,
 
     if (
       memberToRemoveNumber === OWNER_NUMBER ||
-      memberToRemoveNumber + "@lid" === ONWER_LID
+      memberToRemoveNumber + "@s.whatsapp.net" === OWNER_LID
     ) {
       throw new DangerError("Você não pode remover o dono do bot!");
     }

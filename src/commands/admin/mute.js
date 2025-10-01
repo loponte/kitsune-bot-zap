@@ -50,7 +50,7 @@ module.exports = {
     const targetUserNumber = onlyNumbers(userId);
 
     if (
-      [OWNER_NUMBER, OWNER_LID.replace("@lid", "")].includes(targetUserNumber)
+      [OWNER_NUMBER, OWNER_LID.replace("@s.whatsapp.net", "")].includes(targetUserNumber)
     ) {
       throw new DangerError("Você não pode mutar o dono do bot!");
     }

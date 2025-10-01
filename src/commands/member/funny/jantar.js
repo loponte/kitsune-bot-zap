@@ -1,14 +1,13 @@
-const { PREFIX, OWNER_NUMBER } = require(`${BASE_DIR}/config`);
-const { InvalidParameterError } = require(`${BASE_DIR}/errors`);
-const { toUserOrGroupJid, onlyNumbers, compareUserJidWithOtherNumber } = require(`${BASE_DIR}/utils`);
+const { PREFIX, ASSETS_DIR } = require(`${BASE_DIR}/config`);
+const { InvalidParameterError, WarningError } = require(`${BASE_DIR}/errors`);
+const { toUserOrGroupJidWithRealNumber, getRealPhoneNumber } = require(`${BASE_DIR}/utils`);
 const path = require("node:path");
 const fs = require("node:fs");
-const { ASSETS_DIR } = require(`${BASE_DIR}/config`);
 
 module.exports = {
   name: "jantar",
-  description: "Convite um usuário para jantar.",
-  commands: ["jantar", "janta"],
+  description: "Convida um usuário para jantar.",
+  commands: ["jantar", "feed"],
   usage: `${PREFIX}jantar @usuario`,
   /**
    * @param {CommandHandleProps} props
@@ -22,48 +21,50 @@ module.exports = {
     replyJid,
     args,
     isReply,
+    socket,
+    remoteJid,
   }) => {
-    if (!args.length && !isReply) {
+    let targetJid;
+    
+    if (isReply) {
+      targetJid = replyJid;
+    } else if (args[0]) {
+      // Passa o remoteJid (groupJid) para a função
+      targetJid = await toUserOrGroupJidWithRealNumber(args[0], socket, remoteJid);
+    } else {
       throw new InvalidParameterError(
-        "Você precisa mencionar ou marcar um membro!"
+        "Você precisa mencionar alguém ou responder a uma mensagem!"
       );
     }
 
-    const targetJid = isReply ? replyJid : toUserOrGroupJid(args[0]);
-
     if (!targetJid) {
       await sendErrorReply(
-        "Você precisa mencionar um usuário ou responder uma mensagem para jantar."
+        "Você precisa mencionar um usuário ou responder uma mensagem para convidar para jantar."
       );
 
       return;
     }
 
-    // Detecta se o dono é mencionado e usa o número correto
-    const isOwnerExecuting = compareUserJidWithOtherNumber({ userJid, otherNumber: OWNER_NUMBER });
-    const isOwnerTarget = compareUserJidWithOtherNumber({ userJid: targetJid, otherNumber: OWNER_NUMBER });
+    // Obter números reais usando a nova função
+    const userMentionNumber = await getRealPhoneNumber(socket, userJid, remoteJid);
+    const targetMentionNumber = await getRealPhoneNumber(socket, targetJid, remoteJid);
     
-    const userNumber = isOwnerExecuting ? OWNER_NUMBER : onlyNumbers(userJid || "");
-    const targetNumber = isOwnerTarget ? OWNER_NUMBER : onlyNumbers(targetJid || "");
-    const caption = `@${userNumber} foi a um jantar com @${targetNumber}!`;
+    const caption = `@${userMentionNumber} convidou @${targetMentionNumber} para jantar!`;
 
     const dir = path.resolve(ASSETS_DIR, "images", "funny", "jantar");
     const files = fs.existsSync(dir)
-      ? fs.readdirSync(dir).filter((f) => /\.(mp4|gif|webm|mov)$/i.test(f))
+      ? fs.readdirSync(dir).filter((file) => file.endsWith(".mp4"))
       : [];
 
-    const chosen = files.length
-      ? files[Math.floor(Math.random() * files.length)]
-      : "gintama-gintoki.mp4";
+    if (files.length === 0) {
+      throw new WarningError(
+        "Nenhum GIF de jantar foi encontrado na pasta de assets."
+      );
+    }
 
-    const filePath = path.resolve(
-      ASSETS_DIR,
-      "images",
-      "funny",
-      files.length ? "jantar" : "",
-      chosen
-    );
+    const randomFile = files[Math.floor(Math.random() * files.length)];
+    const filePath = path.resolve(dir, randomFile);
 
-    await sendGifFromFile(filePath, caption, [userJid, targetJid].filter(Boolean));
+    await sendGifFromFile(filePath, caption, [userJid, targetJid], true);
   },
 };

@@ -49,10 +49,10 @@ exports.extractDataFromMessage = (webMessage) => {
 
   const replyJid =
     !!extendedTextMessage && !!extendedTextMessage.contextInfo?.participant
-      ? extendedTextMessage.contextInfo.participant
+      ? extendedTextMessage.contextInfo.participant.replace(/:[0-9][0-9]|:[0-9]/g, "")
       : null;
 
-  const userJid = webMessage?.key?.participant?.replace(
+  const userJid = (webMessage?.key?.participant || webMessage?.key?.remoteJid)?.replace(
     /:[0-9][0-9]|:[0-9]/g,
     ""
   );
@@ -243,9 +243,34 @@ function toUserJid(number) {
 
 function toUserOrGroupJid(userArg) {
   const cleanArg = userArg.replace("@", "");
-  return cleanArg.length > 14
-    ? `${cleanArg}@lid`
-    : `${cleanArg}@s.whatsapp.net`;
+  // Sempre usar @s.whatsapp.net para números de usuários
+  return `${onlyNumbers(cleanArg)}@s.whatsapp.net`;
+}
+
+// Versão assíncrona que tenta converter LIDs para números reais
+async function toUserOrGroupJidWithRealNumber(userArg, socket, groupJid = null) {
+
+  
+  const cleanArg = userArg.replace("@", "");
+  const extractedNumber = onlyNumbers(cleanArg);
+  
+
+  
+  // Detecta se é um LID (número muito longo, com espaços, ou contém caracteres não numéricos)
+  const isLongNumber = extractedNumber.length > 13;
+  const hasSpaces = cleanArg.includes(" ");
+  const hasNonNumericChars = cleanArg !== extractedNumber;
+  
+
+  
+  if (isLongNumber || hasSpaces || hasNonNumericChars) {
+
+    // Para LIDs, usar @lid em vez de @s.whatsapp.net
+    return extractedNumber + "@lid";
+  }
+  
+
+  return extractedNumber + "@s.whatsapp.net";
 }
 
 exports.toUserLid = (value) => `${onlyNumbers(value)}@lid`;
@@ -446,11 +471,45 @@ exports.compareUserJidWithOtherNumber = ({ userJid, otherNumber }) => {
   );
 };
 
+/**
+ * Obtém o número para menção a partir do JID
+ * @param {any} socket - Socket do baileys
+ * @param {string} jid - JID do usuário
+ * @param {string} groupJid - JID do grupo (opcional, para contexto)
+ * @returns {Promise<string>} Número para usar em menções
+ */
+exports.getRealPhoneNumber = async (socket, jid, groupJid = null) => {
+  try {
+
+    
+    if (!jid) {
+      return "";
+    }
+
+    const inputNumber = onlyNumbers(jid);
+
+
+    // Para LIDs, simplesmente retorna o número do LID para usar em menções
+    if (jid.endsWith("@lid")) {
+
+      return inputNumber;
+    }
+
+    // Para JIDs normais, retorna o número
+
+    return inputNumber;
+  } catch (error) {
+
+    return onlyNumbers(jid || "");
+  }
+};
+
 exports.getRandomNumber = getRandomNumber;
 exports.getRandomName = getRandomName;
 exports.onlyNumbers = onlyNumbers;
 exports.toUserJid = toUserJid;
 exports.toUserOrGroupJid = toUserOrGroupJid;
+exports.toUserOrGroupJidWithRealNumber = toUserOrGroupJidWithRealNumber;
 
 exports.GROUP_PARTICIPANT_ADD = 27;
 exports.GROUP_PARTICIPANT_LEAVE = 32;

@@ -24,7 +24,7 @@ const {
 } = require("./database");
 const { errorLog } = require("../utils/logger");
 const path = require("node:path");
-const { ONLY_GROUP_ID, BOT_EMOJI, ASSETS_DIR, OWNER_NUMBER } = require("../config");
+const { ONLY_GROUP_ID, BOT_EMOJI, ASSETS_DIR, OWNER_NUMBER, OWNER_LID } = require("../config");
 const { badMacHandler } = require("./badMacHandler");
 const { menuMessage } = require("../menu");
 const { compareUserJidWithOtherNumber } = require(".");
@@ -56,16 +56,31 @@ exports.dynamicCommand = async (paramsHandler, startProcess) => {
     webMessage,
   } = paramsHandler;
 
+  // Evita que o bot responda para suas próprias mensagens
+  if (webMessage?.key?.fromMe) {
+    return;
+  }
+
   const isGroupChat = !!remoteJid?.endsWith("@g.us");
 
-  // Verifica se é o dono falando "kitsune" (case insensitive)
-  const isOwner = compareUserJidWithOtherNumber({ userJid, otherNumber: OWNER_NUMBER });
-  if (isOwner && fullMessage && fullMessage.toLowerCase().includes("kitsune")) {
+  // Verifica se é o dono falando "kitsune" (case insensitive) mas não é um comando válido
+  // Para LIDs, compara diretamente com OWNER_LID; para números normais, usa compareUserJidWithOtherNumber
+  const isOwner = userJid?.includes('@lid') 
+    ? userJid === OWNER_LID 
+    : compareUserJidWithOtherNumber({ userJid, otherNumber: OWNER_NUMBER });
+  console.log(`[DEBUG KITSUNE] userJid: ${userJid}, isOwner: ${isOwner}, fullMessage: "${fullMessage}"`);
+  
+  // Só responde "sim, concordo!" se for o dono, contiver "kitsune" E não for um comando válido (sem prefixo)
+  if (isOwner && fullMessage && fullMessage.toLowerCase().includes("kitsune") && !verifyPrefix(prefix, remoteJid)) {
+    console.log(`[DEBUG KITSUNE] Detectou "kitsune" do dono (não é comando)!`);
     const messageId = webMessage?.key?.id;
     if (messageId && !respondedMessageIds.has(messageId)) {
-      await sendReply("sim, concordo! 🦊");
+      console.log(`[DEBUG KITSUNE] Enviando resposta automática...`);
+      await sendReply("sim, concordo!");
       respondedMessageIds.add(messageId);
       return;
+    } else {
+      console.log(`[DEBUG KITSUNE] Mensagem já foi respondida ou sem ID`);
     }
   }
 

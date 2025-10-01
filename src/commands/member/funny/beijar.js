@@ -1,69 +1,71 @@
-const { PREFIX, OWNER_NUMBER } = require(`${BASE_DIR}/config`);
-const { InvalidParameterError } = require(`${BASE_DIR}/errors`);
-const { toUserOrGroupJid, onlyNumbers, compareUserJidWithOtherNumber } = require(`${BASE_DIR}/utils`);
+const { PREFIX, ASSETS_DIR } = require(`${BASE_DIR}/config`);
+const { InvalidParameterError, WarningError } = require(`${BASE_DIR}/errors`);
+const { toUserOrGroupJidWithRealNumber, getRealPhoneNumber } = require(`${BASE_DIR}/utils`);
 const path = require("node:path");
 const fs = require("node:fs");
-const { ASSETS_DIR } = require(`${BASE_DIR}/config`);
 
 module.exports = {
   name: "beijar",
   description: "Beija um usuário que você ama.",
-  commands: ["beijar", "beija", "beijo", "kiss"],
+  commands: ["beijar", "beijo", "kiss"],
   usage: `${PREFIX}beijar @usuario`,
   /**
    * @param {CommandHandleProps} props
    * @returns {Promise<void>}
    */
   handle: async ({
-    sendGifFromFile,
-    sendGifFromURL,
-    sendErrorReply,
-    userJid,
-    replyJid,
     args,
     isReply,
+    replyJid,
+    userJid,
+    remoteJid,
+    socket,
+    sendGifFromFile,
+    sendErrorReply,
   }) => {
-    if (!args.length && !isReply) {
-      throw new InvalidParameterError(
-        "Você precisa mencionar ou marcar um membro!"
-      );
-    }
 
-    const targetJid = isReply ? replyJid : toUserOrGroupJid(args[0]);
-
-    if (!targetJid) {
-      await sendErrorReply(
-        "Você precisa mencionar um usuário ou responder uma mensagem para beijar."
-      );
-
-      return;
-    }
-
-    // Detecta se o dono é mencionado e usa o número correto
-    const isOwnerExecuting = compareUserJidWithOtherNumber({ userJid, otherNumber: OWNER_NUMBER });
-    const isOwnerTarget = compareUserJidWithOtherNumber({ userJid: targetJid, otherNumber: OWNER_NUMBER });
     
-    const userNumber = isOwnerExecuting ? OWNER_NUMBER : onlyNumbers(userJid || "");
-    const targetNumber = isOwnerTarget ? OWNER_NUMBER : onlyNumbers(targetJid || "");
-    const caption = `@${userNumber} beijou @${targetNumber}!`;
+    let targetJid;
+    
+    if (isReply) {
+      targetJid = replyJid;
+    } else if (args[0]) {
+      // Passa o remoteJid (groupJid) para a função
+      targetJid = await toUserOrGroupJidWithRealNumber(args[0], socket, remoteJid);
+    } else {
+      throw new InvalidParameterError(
+        "Você precisa mencionar alguém ou responder a uma mensagem!"
+      );
+    }
+
+
+
+    // Obtém os números reais para exibição
+    const userMentionNumber = await getRealPhoneNumber(socket, userJid, remoteJid);
+    const targetMentionNumber = await getRealPhoneNumber(socket, targetJid, remoteJid);
+
+
+
+    if (userJid === targetJid) {
+      return sendErrorReply("Você não pode beijar a si mesmo! 😅");
+    }
+
+    const caption = `@${userMentionNumber} beijou @${targetMentionNumber}!`;
 
     const dir = path.resolve(ASSETS_DIR, "images", "funny", "beijar");
     const files = fs.existsSync(dir)
-      ? fs.readdirSync(dir).filter((f) => /\.(mp4|gif|webm|mov)$/i.test(f))
+      ? fs.readdirSync(dir).filter((file) => file.endsWith(".mp4"))
       : [];
 
-    const chosen = files.length
-      ? files[Math.floor(Math.random() * files.length)]
-      : "kiss.mp4";
+    if (files.length === 0) {
+      throw new WarningError(
+        "Nenhum GIF de beijo foi encontrado na pasta de assets."
+      );
+    }
 
-    const filePath = path.resolve(
-      ASSETS_DIR,
-      "images",
-      "funny",
-      files.length ? "beijar" : "",
-      chosen
-    );
+    const randomFile = files[Math.floor(Math.random() * files.length)];
+    const filePath = path.resolve(dir, randomFile);
 
-    await sendGifFromFile(filePath, caption, [userJid, targetJid].filter(Boolean));
+    await sendGifFromFile(filePath, caption, [userJid, targetJid], true);
   },
 };
