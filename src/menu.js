@@ -20,7 +20,7 @@ exports.menuMessage = (groupJid) => {
 ▢
 ▢ • ${prefix}rename - (renomeia uma figurinha)
 ▢ • ${prefix}to-image - (transforma uma figurinha estática em imagem)
-▢ • ${prefix}sticker - (cria figurinha de imagem, gif ou vídeo)
+▢ • ${prefix}sticker - (cria figurinha de imagem, gif ou vídeo)(para não distorcer a imagem, já envie a imagem quadrada)
 ▢
 ╰━━─「⭐」─━━
 
