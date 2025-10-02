@@ -48,6 +48,8 @@ exports.menuMessage = (groupJid) => {
 ▢
 ▢ • ${prefix}fechar - (somente adms mandam mensagem)
 ▢ • ${prefix}abrir - (abre o grupo)
+▢ • ${prefix}add-auto-responder (resposta) - (adiciona uma resposta automática)
+▢ • ${prefix}auto-responder (1/0) - (ativa/desativa as respostas automáticas)
 ▢ • ${prefix}welcome (1/0) - (mensagem de boas-vindas)
 ▢ • ${prefix}exit (1/0) - (mensagem de saida)
 ▢ • ${prefix}anti-audio (1/0) - (anti-audio)
